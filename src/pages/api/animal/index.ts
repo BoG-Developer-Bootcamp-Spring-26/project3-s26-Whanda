@@ -3,23 +3,34 @@ import { connectDB } from "@/lib/mongodb";
 import Animal from "@/models/Animal";
 
 export default async function handler(req: NextApiRequest, res: NextApiResponse) {
-  await connectDB();
-
   try {
+    await connectDB();
+
+    if (req.method === "GET") {
+      // Get all animals
+      const animals = await Animal.find().populate("ownerId");
+      return res.status(200).json(animals);
+    }
+
     if (req.method === "POST") {
-      const { name, breed, hoursTrained, imageUrl, ownerId } = req.body;
-      const animal = await Animal.create({ name, breed, hoursTrained, imageUrl, ownerId });
-      return res.status(200).json(animal);
+      // Create new animal
+      const { name, breed, hoursTrained, profilePic, ownerId } = req.body;
+
+      if (!name || !breed || hoursTrained == null || !ownerId) {
+        return res.status(400).json({ message: "Missing required fields" });
+      }
+
+      const newAnimal = new Animal({ name, breed, hoursTrained, profilePic, ownerId });
+      await newAnimal.save();
+
+      return res.status(200).json(newAnimal);
     }
 
-    if (req.method === "PATCH") {
-      const { id, hoursTrained } = req.body;
-      const updated = await Animal.findByIdAndUpdate(id, { hoursTrained }, { new: true });
-      return res.status(200).json(updated);
-    }
+    // Reject all other methods
+    return res.status(405).json({ message: "Method Not Allowed" });
 
-    res.status(405).end();
-  } catch {
-    res.status(500).json({ error: "Server error" });
+  } catch (err) {
+    console.error(err);
+    return res.status(500).json({ message: "Server Error" });
   }
 }
