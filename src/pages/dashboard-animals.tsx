@@ -145,12 +145,11 @@ export default function DashboardAnimals() {
                       {/* IMAGE */}
                       {animal.imageUrl ? (
                         <div className="relative h-[180px] w-full">
-                          <Image
+                          <img
                             src={animal.imageUrl}
                             alt={animal.name}
-                            fill
-                            className="object-cover"
-                          />
+                            className="h-[180px] w-full object-cover"
+                            />
                         </div>
                       ) : (
                         <div className="h-[180px] w-full bg-gray-200 flex items-center justify-center">

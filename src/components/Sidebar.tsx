@@ -2,7 +2,6 @@ import Image from "next/image";
 import { useRouter } from "next/router";
 import useCurrentUser from "./useCurrentUser";
 
-
 const TRAINING_ICON_ACTIVE = "/images/activeTrainingLogo.png";
 const TRAINING_ICON_INACTIVE = "/images/inactiveTrainingLogo.png";
 
@@ -19,6 +18,41 @@ const ALL_USERS_ICON_ACTIVE = "/images/activeAllUsersLogo.png";
 const ALL_USERS_ICON_INACTIVE = "/images/inactiveAllUsersLogo.png";
 
 const LOGOUT_ICON = "/images/logoutLogo.png";
+
+type SidebarItemProps = {
+  label: string;
+  active: boolean;
+  activeIcon: string;
+  inactiveIcon: string;
+  onClick: () => void;
+};
+
+function SidebarItem({
+  label,
+  active,
+  activeIcon,
+  inactiveIcon,
+  onClick,
+}: SidebarItemProps) {
+  return (
+    <button
+        onClick={onClick}
+        className={`w-full flex items-center gap-4 rounded-[12px] px-4 py-4 text-left transition ${
+            active
+            ? "bg-[#e60f0f] text-white"
+            : "bg-transparent text-[#666666] hover:bg-gray-200"
+        }`}
+    >
+      <Image
+        src={active ? activeIcon : inactiveIcon}
+        alt={label}
+        width={24}
+        height={24}
+      />
+      <span className="text-[16px] font-semibold">{label}</span>
+    </button>
+  );
+}
 
 export default function Sidebar() {
   const router = useRouter();
@@ -46,57 +80,27 @@ export default function Sidebar() {
     router.push("/login");
   };
 
-  const navButtonBase =
-    "flex items-center gap-4 rounded-[12px] text-left transition";
-  const navButtonSelected =
-    "bg-[#e60f0f] text-white px-4 py-4";
-  const navButtonUnselected =
-    "bg-transparent text-[#666666] hover:bg-gray-200 px-4 py-4";
-
-  const adminButtonBase =
-    "flex items-center gap-4 rounded-[12px] text-left transition px-2 py-3";
-  const adminButtonSelected = "bg-gray-200 text-black";
-  const adminButtonUnselected = "text-[#666666] hover:bg-gray-200";
-
   return (
-    <aside className="flex min-h-full w-[198px] flex-col justify-between border-r border-gray-300 bg-[#efefef]">
+    <aside className="flex min-h-full w-[210px] flex-col justify-between border-r border-gray-300 bg-[#efefef]">
       <div className="px-3 pt-4">
         <nav className="flex flex-col">
-          <button
+          <SidebarItem
+            label="Training logs"
+            active={isTrainingPage}
+            activeIcon={TRAINING_ICON_ACTIVE}
+            inactiveIcon={TRAINING_ICON_INACTIVE}
             onClick={() => router.push("/dashboard-training")}
-            className={`${navButtonBase} ${
-              isTrainingPage ? navButtonSelected : navButtonUnselected
-            }`}
-          >
-            <Image
-              src={
-                isTrainingPage
-                  ? TRAINING_ICON_ACTIVE
-                  : TRAINING_ICON_INACTIVE
-              }
-              alt="Training logs"
-              width={22}
-              height={22}
-            />
-            <span className="text-[16px] font-semibold">Training logs</span>
-          </button>
+          />
 
-          <button
-            onClick={() => router.push("/dashboard-animals")}
-            className={`mt-2 ${navButtonBase} ${
-              isAnimalsPage ? navButtonSelected : navButtonUnselected
-            }`}
-          >
-            <Image
-              src={
-                isAnimalsPage ? ANIMALS_ICON_ACTIVE : ANIMALS_ICON_INACTIVE
-              }
-              alt="Animals"
-              width={22}
-              height={22}
+          <div className="mt-2">
+            <SidebarItem
+              label="Animals"
+              active={isAnimalsPage}
+              activeIcon={ANIMALS_ICON_ACTIVE}
+              inactiveIcon={ANIMALS_ICON_INACTIVE}
+              onClick={() => router.push("/dashboard-animals")}
             />
-            <span className="text-[16px] font-semibold">Animals</span>
-          </button>
+          </div>
 
           <div className="mx-3 mt-5 border-t border-gray-300" />
 
@@ -106,68 +110,29 @@ export default function Sidebar() {
             </p>
 
             <div className="flex flex-col gap-2">
-              <button
+              <SidebarItem
+                label="All training"
+                active={isAdminTrainingPage}
+                activeIcon={ALL_TRAINING_ICON_ACTIVE}
+                inactiveIcon={ALL_TRAINING_ICON_INACTIVE}
                 onClick={() => router.push("/admin-training")}
-                className={`${adminButtonBase} ${
-                  isAdminTrainingPage
-                    ? adminButtonSelected
-                    : adminButtonUnselected
-                }`}
-              >
-                <Image
-                  src={
-                    isAdminTrainingPage
-                      ? ALL_TRAINING_ICON_ACTIVE
-                      : ALL_TRAINING_ICON_INACTIVE
-                  }
-                  alt="All training"
-                  width={24}
-                  height={24}
-                />
-                <span className="text-[16px] font-medium">All training</span>
-              </button>
+              />
 
-              <button
+              <SidebarItem
+                label="All animals"
+                active={isAdminAnimalsPage}
+                activeIcon={ALL_ANIMALS_ICON_ACTIVE}
+                inactiveIcon={ALL_ANIMALS_ICON_INACTIVE}
                 onClick={() => router.push("/admin-animals")}
-                className={`${adminButtonBase} ${
-                  isAdminAnimalsPage
-                    ? adminButtonSelected
-                    : adminButtonUnselected
-                }`}
-              >
-                <Image
-                  src={
-                    isAdminAnimalsPage
-                      ? ALL_ANIMALS_ICON_ACTIVE
-                      : ALL_ANIMALS_ICON_INACTIVE
-                  }
-                  alt="All animals"
-                  width={24}
-                  height={24}
-                />
-                <span className="text-[16px] font-medium">All animals</span>
-              </button>
+              />
 
-              <button
+              <SidebarItem
+                label="All users"
+                active={isAdminUsersPage}
+                activeIcon={ALL_USERS_ICON_ACTIVE}
+                inactiveIcon={ALL_USERS_ICON_INACTIVE}
                 onClick={() => router.push("/admin-users")}
-                className={`${adminButtonBase} ${
-                  isAdminUsersPage
-                    ? adminButtonSelected
-                    : adminButtonUnselected
-                }`}
-              >
-                <Image
-                  src={
-                    isAdminUsersPage
-                      ? ALL_USERS_ICON_ACTIVE
-                      : ALL_USERS_ICON_INACTIVE
-                  }
-                  alt="All users"
-                  width={24}
-                  height={24}
-                />
-                <span className="text-[16px] font-medium">All users</span>
-              </button>
+              />
             </div>
           </div>
         </nav>

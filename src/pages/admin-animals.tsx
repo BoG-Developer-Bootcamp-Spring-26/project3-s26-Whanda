@@ -1,9 +1,11 @@
 import { useEffect, useState } from "react";
 import { useRouter } from "next/router";
+import Image from "next/image";
 import sidebar from "../components/Sidebar";
 import useCurrentUser from "../components/useCurrentUser";
 
 const Sidebar = sidebar;
+const LOGO_SRC = "/images/appLogo.png";
 
 type AdminAnimal = {
   _id: string;
@@ -14,7 +16,6 @@ type AdminAnimal = {
   ownerId: {
     _id: string;
     name: string;
-    email: string;
   };
 };
 
@@ -33,12 +34,10 @@ export default function AdminAnimals() {
     }
 
     const fetchAnimals = async () => {
-      if (!user) {
-        return;
-      }
+      if (!user) return;
 
       if (!user.isAdmin) {
-        setError("Access denied: admins only.");
+        setError("Admin access only.");
         setPageLoading(false);
         return;
       }
@@ -52,7 +51,7 @@ export default function AdminAnimals() {
           return;
         }
 
-        setAnimals(data as AdminAnimal[]);
+        setAnimals(Array.isArray(data) ? data : []);
       } catch {
         setError("Server error while loading animals.");
       } finally {
@@ -60,53 +59,102 @@ export default function AdminAnimals() {
       }
     };
 
-    if (user) {
-      fetchAnimals();
-    }
+    if (user) fetchAnimals();
   }, [loading, user, router]);
 
-  if (loading || !user) {
-    return null;
-  }
+  if (loading || !user) return null;
 
   return (
-    <div className="flex min-h-screen bg-gray-50">
-      <Sidebar />
-
-      <main className="flex-1 p-8">
-        <h1 className="text-3xl font-bold mb-6">All Animals</h1>
-
-        {error && <p className="text-red-600 mb-4">{error}</p>}
-
-        {pageLoading ? (
-          <p>Loading...</p>
-        ) : (
-          <div className="grid grid-cols-1 gap-4 md:grid-cols-2 xl:grid-cols-3">
-            {animals.map((animal) => (
-              <div key={animal._id} className="rounded bg-white p-4 shadow">
-                {animal.imageUrl ? (
-                  <img
-                    src={animal.imageUrl}
-                    alt={animal.name}
-                    className="mb-3 h-48 w-full rounded object-cover"
-                  />
-                ) : (
-                  <div className="mb-3 h-48 w-full rounded bg-gray-200 flex items-center justify-center text-gray-500">
-                    No Image
-                  </div>
-                )}
-
-                <h2 className="text-xl font-semibold">{animal.name}</h2>
-                <p>Breed: {animal.breed}</p>
-                <p>Hours Trained: {animal.hoursTrained}</p>
-                <p className="text-sm text-gray-600 mt-2">
-                  Owner: {animal.ownerId?.name}
-                </p>
-              </div>
-            ))}
+    <div className="min-h-screen bg-[#efefef]">
+      {/* HEADER */}
+      <header className="flex h-[64px] items-center border-b border-gray-300 bg-[#e9e9e9] px-6 shadow-[0_2px_4px_rgba(0,0,0,0.08)]">
+        <div className="flex items-center gap-3">
+          <div className="relative h-[30px] w-[52px] overflow-hidden rounded-[8px]">
+            <Image
+              src={LOGO_SRC}
+              alt="Progress logo"
+              fill
+              className="object-contain"
+              sizes="52px"
+            />
           </div>
-        )}
-      </main>
+
+          <span className="text-[26px] font-extrabold text-black">
+            Progress
+          </span>
+        </div>
+      </header>
+
+      <div className="flex min-h-[calc(100vh-64px)]">
+        <Sidebar />
+
+        {/* MAIN CONTENT */}
+        <main className="flex-1">
+          {/* PAGE TITLE */}
+          <div className="border-b border-gray-300 px-8 py-5">
+            <h1 className="text-[19px] font-semibold text-[#6c625d]">
+              All animals
+            </h1>
+          </div>
+
+          {/* GRID */}
+          <div className="px-8 py-7">
+            {error && <p className="mb-4 text-red-600">{error}</p>}
+
+            {pageLoading ? (
+              <p>Loading...</p>
+            ) : animals.length === 0 ? (
+              <div className="rounded-[18px] bg-white p-6 shadow-[0_2px_8px_rgba(0,0,0,0.08)]">
+                <p>No animals found.</p>
+              </div>
+            ) : (
+              <div className="grid grid-cols-3 gap-6">
+                {animals.map((animal) => {
+                  const initial =
+                    animal.name?.charAt(0).toUpperCase() || "A";
+
+                  return (
+                    <div
+                      key={animal._id}
+                      className="overflow-hidden rounded-[16px] bg-white shadow-[0_2px_8px_rgba(0,0,0,0.12)]"
+                    >
+                      {/* IMAGE */}
+                      {animal.imageUrl ? (
+                        <img
+                          src={animal.imageUrl}
+                          alt={animal.name}
+                          className="h-[180px] w-full object-cover"
+                        />
+                      ) : (
+                        <div className="flex h-[180px] w-full items-center justify-center bg-gray-200">
+                          No Image
+                        </div>
+                      )}
+
+                      {/* CARD INFO */}
+                      <div className="flex items-center gap-3 px-4 py-4">
+                        <div className="flex h-[34px] w-[34px] items-center justify-center rounded-full bg-[#e60f0f] text-white font-bold">
+                          {initial}
+                        </div>
+
+                        <div>
+                          <div className="text-[16px] font-semibold text-[#2d1212]">
+                            {animal.name} - {animal.breed}
+                          </div>
+
+                          <div className="text-[13px] text-[#8a8a8a]">
+                            {animal.ownerId?.name} • Trained: {animal.hoursTrained} hours
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+                  );
+                })}
+              </div>
+            )}
+          </div>
+        </main>
+      </div>
     </div>
   );
 }
