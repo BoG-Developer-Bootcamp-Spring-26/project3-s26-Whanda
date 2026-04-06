@@ -7,7 +7,6 @@ import SearchBar from "../components/SearchBar";
 
 const Sidebar = sidebar;
 
-// change filenames if needed
 const LOGO_SRC = "/images/appLogo.png";
 const PLUS_SRC = "/images/createNewLogo.png";
 
