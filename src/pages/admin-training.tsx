@@ -3,6 +3,7 @@ import { useRouter } from "next/router";
 import Image from "next/image";
 import sidebar from "../components/Sidebar";
 import useCurrentUser from "../components/useCurrentUser";
+import SearchBar from "../components/SearchBar";
 
 const Sidebar = sidebar;
 
@@ -32,6 +33,9 @@ export default function AdminTraining() {
   const [logs, setLogs] = useState<TrainingLog[]>([]);
   const [pageLoading, setPageLoading] = useState(true);
   const [error, setError] = useState("");
+
+  const [searchQuery, setSearchQuery] = useState("");
+  
 
   useEffect(() => {
     if (!loading && !user) {
@@ -88,6 +92,10 @@ export default function AdminTraining() {
     });
   }, [logs]);
 
+  const filtered = formattedLogs.filter((log) =>
+    log.title.toLowerCase().includes(searchQuery.toLowerCase())
+  );
+
   if (loading || !user) return null;
 
   return (
@@ -108,6 +116,9 @@ export default function AdminTraining() {
           <span className="text-[26px] font-extrabold text-black">
             Progress
           </span>
+        </div>
+        <div className="absolute left-1/2 -translate-x-1/2">
+          <SearchBar onSearch={setSearchQuery} />
         </div>
       </header>
 
@@ -135,7 +146,7 @@ export default function AdminTraining() {
               </div>
             ) : (
               <div className="space-y-5">
-                {formattedLogs.map((log) => (
+                {filtered.map((log) => (
                   <div
                     key={log._id}
                     className="flex overflow-hidden rounded-[16px] bg-white shadow-[0_2px_8px_rgba(0,0,0,0.12)]"

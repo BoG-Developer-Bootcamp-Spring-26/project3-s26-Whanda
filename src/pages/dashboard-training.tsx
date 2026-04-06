@@ -3,6 +3,7 @@ import { useRouter } from "next/router";
 import Image from "next/image";
 import sidebar from "../components/Sidebar";
 import useCurrentUser from "../components/useCurrentUser";
+import SearchBar from "../components/SearchBar";
 
 const Sidebar = sidebar;
 
@@ -43,6 +44,8 @@ export default function DashboardTraining() {
   const [animals, setAnimals] = useState<Animal[]>([]);
   const [pageLoading, setPageLoading] = useState(true);
   const [error, setError] = useState("");
+  const [searchQuery, setSearchQuery] = useState("");
+  
 
   useEffect(() => {
     if (!loading && !user) {
@@ -117,6 +120,9 @@ export default function DashboardTraining() {
       };
     });
   }, [logs]);
+  const filtered = formattedLogs.filter((log) =>
+    log.title.toLowerCase().includes(searchQuery.toLowerCase())
+  );
 
   if (loading || !user) {
     return null;
@@ -139,6 +145,10 @@ export default function DashboardTraining() {
           <span className="text-[26px] font-extrabold leading-none text-black">
             Progress
           </span>
+        </div>
+
+        <div className="absolute left-1/2 -translate-x-1/2">
+          <SearchBar onSearch={setSearchQuery} />
         </div>
       </header>
 

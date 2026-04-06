@@ -19,7 +19,7 @@ export default function SearchBar({onSearch}: SearchBarProps) {
             placeholder="Search..."
             value={query}
             onChange={handleChange}
-            className="w-full rounded-[12px] border border-gray-300 bg-white px-4 py-2 text-[15px] text-[#3e3e3e] outline-none focus:border-[#2f317e]"
+            className="w-[300px] rounded-[12px] border border-gray-300 bg-white px-4 py-2 text-[15px] text-[#3e3e3e] outline-none focus:border-[#2f317e]"
         />
     );
 
