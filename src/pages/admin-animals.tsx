@@ -3,6 +3,7 @@ import { useRouter } from "next/router";
 import Image from "next/image";
 import sidebar from "../components/Sidebar";
 import useCurrentUser from "../components/useCurrentUser";
+import SearchBar from "../components/SearchBar";
 
 const Sidebar = sidebar;
 const LOGO_SRC = "/images/appLogo.png";
@@ -26,6 +27,11 @@ export default function AdminAnimals() {
   const [animals, setAnimals] = useState<AdminAnimal[]>([]);
   const [pageLoading, setPageLoading] = useState(true);
   const [error, setError] = useState("");
+
+  const [searchQuery, setSearchQuery] = useState("");
+  const filtered = animals.filter((animal) => 
+    animal.name.toLowerCase().includes(searchQuery.toLowerCase())
+  );
 
   useEffect(() => {
     if (!loading && !user) {
@@ -83,6 +89,9 @@ export default function AdminAnimals() {
             Progress
           </span>
         </div>
+        <div className="absolute left-1/2 -translate-x-1/2">
+          <SearchBar onSearch={setSearchQuery} />                                                                                                                    
+        </div>
       </header>
 
       <div className="flex min-h-[calc(100vh-64px)]">
@@ -109,7 +118,7 @@ export default function AdminAnimals() {
               </div>
             ) : (
               <div className="grid grid-cols-3 gap-6">
-                {animals.map((animal) => {
+                {filtered.map((animal) => {
                   const initial =
                     animal.name?.charAt(0).toUpperCase() || "A";
 
