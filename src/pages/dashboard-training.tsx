@@ -45,6 +45,28 @@ export default function DashboardTraining() {
   const [pageLoading, setPageLoading] = useState(true);
   const [error, setError] = useState("");
   const [searchQuery, setSearchQuery] = useState("");
+
+  const handleDelete = async (trainingId: string) => {
+    if (!confirm("Are you sure you want to delete this training log?")) return;
+
+    try {
+      const res = await fetch("/api/training", {
+        method: "DELETE",
+        headers: {"Content-Type": "application/json"},
+        body: JSON.stringify({id: trainingId}),
+      });
+
+      if (!res.ok) {
+        const data = await res.json();
+        setError(data.error || "Failed to delete training log.");
+        return;
+      }
+
+      setLogs((prevLogs) => prevLogs.filter((log) => log._id !== trainingId));
+    } catch {
+      setError("Server error while deleting training log.");
+    }
+  };
   
 
   useEffect(() => {
@@ -212,7 +234,7 @@ export default function DashboardTraining() {
               </div>
             ) : (
               <div className="space-y-5">
-                {formattedLogs.map((log) => (
+                {filtered.map((log) => (
                   <div
                     key={log._id}
                     className="flex overflow-hidden rounded-[16px] bg-white shadow-[0_2px_8px_rgba(0,0,0,0.12)]"
@@ -238,7 +260,7 @@ export default function DashboardTraining() {
                         </div>
 
                         <p className="mt-1 text-[14px] text-[#9a9a9a]">
-                          {log.userId.name} - {log.animalId.breed} - {log.animalId.name}
+                          {log.userId?.name ?? "Unknown"} - {log.animalId?.breed ?? "Unknown"} - {log.animalId?.name ?? "Unknown"}
                         </p>
 
                         <p className="mt-3 text-[15px] text-[#222222]">
@@ -260,6 +282,12 @@ export default function DashboardTraining() {
                         />
                       </button>
                     </div>
+                    <button
+                      onClick={() => handleDelete(log._id)}
+                      className="ml-auto text-red-600 hover:text-red-800"
+                    >
+                      Delete
+                    </button>
                   </div>
                 ))}
               </div>

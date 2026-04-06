@@ -60,6 +60,12 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
       const deleted = await Training.findByIdAndDelete(id);
       if (!deleted) return res.status(404).json({ error: "Training not found" });
 
+      const animal = await Animal.findById(deleted.animalId);
+      if (animal) {
+        animal.hoursTrained -= deleted.hours;
+        await animal.save();
+      }
+
       return res.status(200).json({ message: "Training deleted" });
     }
 

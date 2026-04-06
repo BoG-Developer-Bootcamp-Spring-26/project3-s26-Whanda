@@ -28,6 +28,27 @@ export default function AdminUsers() {
     u.name.toLowerCase().includes(searchQuery.toLowerCase())
   );
 
+  const handleDelete = async (userId: string) => {
+    if (!confirm("Are you sure you want to delete this user?")) return;
+
+    try {
+      const res = await fetch("/api/user", {
+        method: "DELETE",
+        headers: {"Content-Type": "application/json"},
+        body: JSON.stringify({id: userId}), 
+      });
+      if (!res.ok) {
+        const data = await res.json();
+        setError(data.error || "Failed to delete user.");
+        return;
+      }
+
+      setUsers((prev) => prev.filter((u) => u._id !== userId));
+    } catch {
+      setError("Server error while deleting user.");
+    }
+  };
+
   useEffect(() => {
     if (!loading && !user) {
       router.push("/login");
@@ -135,6 +156,14 @@ export default function AdminUsers() {
                             {u.isAdmin ? "Admin" : "User"} • Atlanta, Georgia
                           </div>
                         </div>
+                        {u._id !== user.id && (                                                                                               
+                          <button                                                                                                             
+                            onClick={() => handleDelete(u._id)}
+                            className="ml-auto text-[13px] text-red-500 hover:text-red-700"                                                   
+                          >             
+                            Delete
+                          </button>
+                        )}
                       </div>
                     </div>
                   );

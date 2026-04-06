@@ -33,6 +33,28 @@ export default function AdminAnimals() {
     animal.name.toLowerCase().includes(searchQuery.toLowerCase())
   );
 
+  const handleDelete = async (animalId: string) => {
+    if (!confirm("Are you sure you want to delete this animal?")) return;
+
+    try {
+      const res = await fetch("/api/animal", {
+        method: "DELETE",
+        headers: {"Content-Type": "application/json"},
+        body: JSON.stringify({id: animalId}),
+      });
+
+      if (!res.ok) {
+        const data = await res.json();
+        setError(data.error || "Failed to delete animal.");
+        return;
+      }
+
+      setAnimals((prev) => prev.filter((a) => a._id !== animalId));
+    } catch {
+      setError("Server error while deleting animal.");
+    }
+  };
+
   useEffect(() => {
     if (!loading && !user) {
       router.push("/login");
@@ -155,6 +177,12 @@ export default function AdminAnimals() {
                             {animal.ownerId?.name} • Trained: {animal.hoursTrained} hours
                           </div>
                         </div>
+                        <button                                                                                                               
+                          onClick={() => handleDelete(animal._id)}
+                          className="ml-auto text-[13px] text-red-500 hover:text-red-700"
+                        >                                                                                                                     
+                          Delete
+                        </button>
                       </div>
                     </div>
                   );
