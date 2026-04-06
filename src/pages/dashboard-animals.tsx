@@ -32,6 +32,28 @@ export default function DashboardAnimals() {
     animal.name.toLowerCase().includes(searchQuery.toLowerCase())
   );
 
+  const handleDelete = async (animalId: string) => {
+    if (!confirm("Are you sure you want to delete this animal?")) return;
+
+    try {
+      const res = await fetch("/api/animal", {
+        method: "DELETE",
+        headers: {"Content-Type": "application/json"},
+        body: JSON.stringify({id: animalId}),
+      });
+
+      if (!res.ok) {
+        const data = await res.json();
+        setError(data.error || "Failed to delete animal.");
+        return;
+      }
+
+      setAnimals((prev) => prev.filter((a) => a._id !== animalId));
+    } catch {
+      setError("Server error while deleting animal.");
+    }
+  };
+
   useEffect(() => {
     if (!loading && !user) {
       router.push("/login");
@@ -180,6 +202,13 @@ export default function DashboardAnimals() {
                             {user.name} · Trained: {animal.hoursTrained} hours
                           </div>
                         </div>
+
+                        <button
+                          onClick={() => handleDelete(animal._id)}
+                          className="ml-auto text-red-600 hover:text-red-800"
+                        >
+                          Delete
+                        </button>
                       </div>
                     </div>
                   );

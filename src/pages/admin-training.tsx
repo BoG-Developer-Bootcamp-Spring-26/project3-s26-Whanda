@@ -35,6 +35,28 @@ export default function AdminTraining() {
   const [error, setError] = useState("");
 
   const [searchQuery, setSearchQuery] = useState("");
+
+  const handleDelete = async (logId: string) => {
+    if (!confirm("Are you sure you want to delete this training log?")) return;
+
+    try {
+      const res = await fetch("/api/training", {
+        method: "DELETE",
+        headers: {"Content-Type": "application/json"},
+        body: JSON.stringify({id: logId}),
+      });
+
+      if (!res.ok) {
+        const data = await res.json();
+        setError(data.error || "Failed to delete training log.");
+        return;
+      }
+
+      setLogs((prev) => prev.filter((log) => log._id !== logId));
+    } catch {
+      setError("Server error while deleting training log.");
+    }
+  }
   
 
   useEffect(() => {
@@ -184,6 +206,12 @@ export default function AdminTraining() {
                           {log.description}
                         </p>
                       </div>
+                      <button                                                                                                               
+                        onClick={() => handleDelete(log._id)}
+                        className="ml-auto text-[13px] text-red-500 hover:text-red-700"                                                     
+                      >
+                        Delete                                                                                                              
+                      </button> 
                     </div>
                   </div>
                 ))}
