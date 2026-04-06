@@ -130,7 +130,7 @@ export default function Page() {
 
 <img width="600" alt="Screenshot 2023-11-09 at 5 49 13 PM" src="https://github.com/BoG-Dev-Bootcamp-F23/project2-f23/assets/8647920/ac885c28-fcba-4806-933b-eb324877d438">
 
-- This component is a simple search bar that either filters components when you click an enter button next to the search or as you type without using a button.
+- This component is a simple search bar that either filters comonents when you click an enter button next to the search or as you type without using a button.
 - For animal/user pages the search limits by the name of the animal/user and for training log pages the search limits by the title of the training log.
 
 ## Backend Specifications
