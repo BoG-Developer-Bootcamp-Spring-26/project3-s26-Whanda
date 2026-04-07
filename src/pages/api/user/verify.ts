@@ -2,6 +2,7 @@ import type { NextApiRequest, NextApiResponse } from "next";
 import { connectDB } from "@/lib/mongodb";
 import User from "@/models/User";
 import argon2 from "argon2";
+import {createToken, setTokenCookie} from "@/lib/auth";
 
 export default async function handler(req: NextApiRequest, res: NextApiResponse) {
   await connectDB();
@@ -32,6 +33,8 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
     }
 
     // Success response
+    const token = createToken(user._id.toString(), user.name, user.isAdmin);
+    setTokenCookie(res, token);
     return res.status(200).json({
       message: "Login successful",
       userId: user._id,
