@@ -60,30 +60,11 @@ export default function CreateAccount() {
         return;
       }
 
-      const verifyRes = await fetch("/api/user/verify", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({
-          email: email.trim(),
-          password,
-        }),
-      });
-
-      const verifyData = await verifyRes.json();
-
-      if (!verifyRes.ok) {
-        setError(verifyData.error || "Account created, but automatic login failed.");
-        return;
-      }
-
       login({
-        id: verifyData.userId || verifyData._id,
-        name: verifyData.name || name.trim(),
-        isAdmin: verifyData.isAdmin,
+        id: createData.user?._id || createData.userId,
+        name: name.trim(),
+        isAdmin,
       });
-
       router.push("/dashboard-animals");
     } catch {
       setError("Server error while creating account.");
