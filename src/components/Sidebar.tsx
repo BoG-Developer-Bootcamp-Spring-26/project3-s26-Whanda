@@ -36,12 +36,12 @@ function SidebarItem({
 }: SidebarItemProps) {
   return (
     <button
-        onClick={onClick}
-        className={`w-full flex items-center gap-4 rounded-[12px] px-4 py-4 text-left transition ${
-            active
-            ? "bg-[#e60f0f] text-white"
-            : "bg-transparent text-[#666666] hover:bg-gray-200"
-        }`}
+      onClick={onClick}
+      className={`w-full flex items-center gap-4 rounded-[12px] px-4 py-4 text-left transition ${
+        active
+          ? "bg-[#e60f0f] text-white"
+          : "bg-transparent text-[#666666] hover:bg-gray-200"
+      }`}
     >
       <Image
         src={active ? activeIcon : inactiveIcon}
@@ -81,7 +81,7 @@ export default function Sidebar() {
   };
 
   return (
-    <aside className="flex h-[calc(100vh-64px)] w-[210px] shrink-0 flex-col justify-between border-r border-gray-300 bg-[#efefef] sticky top-[64px]">
+    <aside className="sticky top-[64px] flex h-[calc(100vh-64px)] w-[210px] shrink-0 flex-col justify-between border-r border-gray-300 bg-[#efefef]">
       <div className="px-3 pt-4">
         <nav className="flex flex-col">
           <SidebarItem
@@ -102,39 +102,43 @@ export default function Sidebar() {
             />
           </div>
 
-          <div className="mx-3 mt-5 border-t border-gray-300" />
+          {user.isAdmin && (
+            <>
+              <div className="mx-3 mt-5 border-t border-gray-300" />
 
-          <div className="px-3 pt-5">
-            <p className="mb-4 text-[18px] font-bold text-[#5b5b5b]">
-              Admin access
-            </p>
+              <div className="px-3 pt-5">
+                <p className="mb-4 text-[18px] font-bold text-[#5b5b5b]">
+                  Admin access
+                </p>
 
-            <div className="flex flex-col gap-2">
-              <SidebarItem
-                label="All training"
-                active={isAdminTrainingPage}
-                activeIcon={ALL_TRAINING_ICON_ACTIVE}
-                inactiveIcon={ALL_TRAINING_ICON_INACTIVE}
-                onClick={() => router.push("/admin-training")}
-              />
+                <div className="flex flex-col gap-2">
+                  <SidebarItem
+                    label="All training"
+                    active={isAdminTrainingPage}
+                    activeIcon={ALL_TRAINING_ICON_ACTIVE}
+                    inactiveIcon={ALL_TRAINING_ICON_INACTIVE}
+                    onClick={() => router.push("/admin-training")}
+                  />
 
-              <SidebarItem
-                label="All animals"
-                active={isAdminAnimalsPage}
-                activeIcon={ALL_ANIMALS_ICON_ACTIVE}
-                inactiveIcon={ALL_ANIMALS_ICON_INACTIVE}
-                onClick={() => router.push("/admin-animals")}
-              />
+                  <SidebarItem
+                    label="All animals"
+                    active={isAdminAnimalsPage}
+                    activeIcon={ALL_ANIMALS_ICON_ACTIVE}
+                    inactiveIcon={ALL_ANIMALS_ICON_INACTIVE}
+                    onClick={() => router.push("/admin-animals")}
+                  />
 
-              <SidebarItem
-                label="All users"
-                active={isAdminUsersPage}
-                activeIcon={ALL_USERS_ICON_ACTIVE}
-                inactiveIcon={ALL_USERS_ICON_INACTIVE}
-                onClick={() => router.push("/admin-users")}
-              />
-            </div>
-          </div>
+                  <SidebarItem
+                    label="All users"
+                    active={isAdminUsersPage}
+                    activeIcon={ALL_USERS_ICON_ACTIVE}
+                    inactiveIcon={ALL_USERS_ICON_INACTIVE}
+                    onClick={() => router.push("/admin-users")}
+                  />
+                </div>
+              </div>
+            </>
+          )}
         </nav>
       </div>
 
