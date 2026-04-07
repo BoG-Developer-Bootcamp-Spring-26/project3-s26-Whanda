@@ -268,7 +268,7 @@ export default function DashboardTraining() {
                       </div>
 
                       <button
-                        onClick={() => router.push("/create-training")}
+                        onClick={() => router.push(`/create-training?id=${log._id}`)}
                         className="flex h-[52px] w-[52px] shrink-0 items-center justify-center rounded-full bg-[#e60f0f] hover:bg-[#cf0d0d]"
                         aria-label="Edit training log"
                         title="Edit training log"
