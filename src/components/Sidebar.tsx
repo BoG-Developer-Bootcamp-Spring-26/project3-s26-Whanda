@@ -81,7 +81,7 @@ export default function Sidebar() {
   };
 
   return (
-    <aside className="flex min-h-full w-[210px] flex-col justify-between border-r border-gray-300 bg-[#efefef]">
+    <aside className="flex h-[calc(100vh-64px)] w-[210px] shrink-0 flex-col justify-between border-r border-gray-300 bg-[#efefef] sticky top-[64px]">
       <div className="px-3 pt-4">
         <nav className="flex flex-col">
           <SidebarItem
