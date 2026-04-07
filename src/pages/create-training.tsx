@@ -34,6 +34,9 @@ export default function CreateTraining() {
   const router = useRouter();
   const { user, loading } = useCurrentUser();
 
+  const { id } = router.query;
+  const isEditing = Boolean(id);
+
   const [title, setTitle] = useState("");
   const [hours, setHours] = useState(1);
   const [note, setNote] = useState("");
@@ -94,6 +97,39 @@ export default function CreateTraining() {
     }
   }, [loading, user, router]);
 
+  useEffect(() => {
+    if (!id || !animals.length) return;
+
+    const fetchLog = async () => {
+      try {
+        const res = await fetch("/api/training");
+        const data = await res.json();
+
+        if (!res.ok) return;
+
+        const log = (Array.isArray(data) ? data : []).find(
+          (l: any) => l._id === id
+        );
+
+        if (!log) return;
+
+        setTitle(log.title);
+        setNote(log.description);
+        setHours(log.hours);
+        setAnimalId(log.animalId?._id || log.animalId);
+
+        const d = new Date(log.date);
+        setMonth(MONTHS[d.getMonth()]);
+        setDay(d.getDate().toString());
+        setYear(d.getFullYear().toString());
+      } catch {
+        setError("Failed to load training log.");
+      }
+    };
+
+    fetchLog();
+  }, [id, animals]);
+
   const handleSubmit = async (e: FormEvent<HTMLFormElement>) => {
     e.preventDefault();
 
@@ -126,18 +162,28 @@ export default function CreateTraining() {
     setError("");
 
     try {
-      const res = await fetch("/api/training", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({
-          title: title.trim(),
-          description: note.trim(),
-          hours,
-          userId: user.id,
-          animalId,
-        }),
+      const url = "/api/training";
+      const method = isEditing ? "PATCH" : "POST";
+      const body = isEditing
+        ? {
+            id,
+            title: title.trim(),
+            description: note.trim(),
+            hours,
+            animalId,
+          }
+        : {
+            title: title.trim(),
+            description: note.trim(),
+            hours,
+            userId: user.id,
+            animalId,
+          };
+
+      const res = await fetch(url, {
+        method,
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(body),
       });
 
       const data = await res.json();
@@ -185,7 +231,7 @@ export default function CreateTraining() {
         <main className="flex-1">
           <div className="border-b border-gray-300 px-8 py-5">
             <h1 className="text-[19px] font-semibold text-[#6c625d]">
-              Training logs
+              {isEditing ? "Edit training log" : "Training logs"}
             </h1>
           </div>
 
@@ -325,7 +371,7 @@ export default function CreateTraining() {
                     disabled={saving}
                     className="h-[36px] w-[114px] rounded-[4px] bg-[#e60f0f] text-[16px] font-semibold text-white hover:bg-[#cf0d0d] disabled:bg-gray-400"
                   >
-                    {saving ? "Saving..." : "Save"}
+                    {saving ? "Saving..." : isEditing ? "Update" : "Save"}
                   </button>
                 </div>
               </form>

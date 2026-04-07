@@ -42,15 +42,28 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
     }
 
     if (req.method === "PUT" || req.method === "PATCH") {
-      const { id, ...updates } = req.body;
+    const { id, ...updates } = req.body;
 
-      if (!id) return res.status(400).json({ error: "Missing id" });
+    if (!id) return res.status(400).json({ error: "Missing id" });
 
-      const updated = await Training.findByIdAndUpdate(id, updates, { new: true });
-      if (!updated) return res.status(404).json({ error: "Training not found" });
+    const existing = await Training.findById(id);
+    if (!existing) return res.status(404).json({ error: "Training not found" });
 
-      return res.status(200).json({ message: "Training updated", updated });
+    const oldHours = existing.hours;
+
+    const updated = await Training.findByIdAndUpdate(id, updates, { new: true });
+
+    if (updates.hours !== undefined) {
+      const diff = updates.hours - oldHours;
+      const animal = await Animal.findById(updated.animalId);
+      if (animal) {
+        animal.hoursTrained += diff;
+        await animal.save();
+      }
     }
+
+    return res.status(200).json({ message: "Training updated", updated });
+  }
 
     if (req.method === "DELETE") {
       const { id } = req.body;

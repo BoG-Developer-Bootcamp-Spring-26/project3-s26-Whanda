@@ -2,6 +2,7 @@ import type { NextApiRequest, NextApiResponse } from "next";
 import { connectDB } from "@/lib/mongodb";
 import Animal from "@/models/Animal";
 import User from "@/models/User";
+import Training from "@/models/Training";
 
 export default async function handler(req: NextApiRequest, res: NextApiResponse) {
   await connectDB();
@@ -86,6 +87,8 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
 
       const deleted = await Animal.findByIdAndDelete(id);
       if (!deleted) return res.status(404).json({ error: "Animal not found" });
+
+      await Training.deleteMany({ animalId: id });
 
       return res.status(200).json({ message: "Animal deleted" });
     }
