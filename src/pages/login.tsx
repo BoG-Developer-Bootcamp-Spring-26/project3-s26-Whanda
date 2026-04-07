@@ -16,7 +16,7 @@ export default function Login() {
 
   useEffect(() => {
     if (!loading && user) {
-      router.push("/dashboard-trainings");
+      router.push("/dashboard-training");
     }
   }, [loading, user, router]);
 
